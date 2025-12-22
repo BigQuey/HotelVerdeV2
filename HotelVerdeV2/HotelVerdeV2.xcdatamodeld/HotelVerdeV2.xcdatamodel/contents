@@ -14,8 +14,9 @@
     </entity>
     <entity name="HotelEntity" representedClassName="HotelEntity" syncable="YES" codeGenerationType="class">
         <attribute name="ciudad" optional="YES" attributeType="String"/>
-        <attribute name="codigo" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="codigo" optional="YES" attributeType="String"/>
         <attribute name="descripcion" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="nombre" optional="YES" attributeType="String"/>
         <attribute name="servicio" optional="YES" attributeType="String"/>
     </entity>
