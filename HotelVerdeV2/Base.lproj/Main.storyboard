@@ -409,7 +409,7 @@
             <objects>
                 <viewController id="Ti9-Ex-T5h" customClass="HotelCrudAdminViewController" customModule="HotelVerdeV2" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="tVk-Qn-GkT">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UuP-J6-flX">
@@ -557,6 +557,7 @@
                         <viewLayoutGuide key="safeArea" id="LZt-Ra-9AN"/>
                         <color key="backgroundColor" red="0.96078431372549022" green="0.93725490196078431" blue="0.90196078431372551" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     </view>
+                    <navigationItem key="navigationItem" id="hcd-cz-ucT"/>
                     <connections>
                         <outlet property="tfCiudad" destination="xnw-oR-S1t" id="1LR-m6-3gy"/>
                         <outlet property="tfCodigo" destination="c4o-vi-72J" id="PHO-vp-6qL"/>
@@ -713,7 +714,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ylB-x9-DnX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1613" y="1101"/>
+            <point key="canvasLocation" x="1613" y="1093"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="1S6-3k-lDV">
@@ -1683,6 +1684,7 @@
                     <connections>
                         <outlet property="tvHotel" destination="zR4-WA-d0l" id="165-Up-tDx"/>
                         <segue destination="6wd-wN-hRs" kind="show" identifier="irAGenerarHotel" id="4EA-ja-4am"/>
+                        <segue destination="Ti9-Ex-T5h" kind="show" identifier="verDetalleHotel" id="RzR-EW-eah"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qT2-QW-Sc7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
