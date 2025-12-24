@@ -124,4 +124,7 @@ class HotelListaAdminViewController: UIViewController, UITableViewDelegate,
     @IBAction func btnAgregar(_ sender: UIButton) {
         performSegue(withIdentifier: "irAGenerarHotel", sender: self)
     }
+    @IBAction func btnVolverTapped(_ sender: UIButton) {
+        dismiss(animated: true)
+    }
 }

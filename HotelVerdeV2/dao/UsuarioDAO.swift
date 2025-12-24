@@ -8,71 +8,79 @@
 
 import UIKit
 import CoreData
+import Foundation
+import FirebaseFirestore
 
-class UsuarioDAO: IMetodos {
+class UsuarioDAO {
     
-    typealias Bean = Usuario
-    typealias Entity = UsuarioEntity
-
-    func save(bean: Usuario) -> Int {
-        var salida = -1
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        let tabla = UsuarioEntity(context: bd)
+    let db = Firestore.firestore()
+    let coleccion = "usuarios"
+    
+    // MARK: - Guardar (Nuevo)
+    func guardar(usuario: Usuario, completion: @escaping (Bool) -> Void) {
+        let datos: [String: Any] = [
+            "nombre": usuario.nombre,
+            "email": usuario.email,
+            "clave": usuario.clave,
+            "rol": usuario.rol,
+            "fecha_creacion": FieldValue.serverTimestamp()
+        ]
         
-        tabla.codigo = bean.codigo
-        tabla.nombre = bean.nombre
-        tabla.apellido = bean.apellido
-        tabla.correo = bean.correo
-        tabla.password = bean.password
-        tabla.rol = bean.rol
+        db.collection(coleccion).addDocument(data: datos) { error in
+            if let error = error {
+                print("Error guardando usuario: \(error)")
+                completion(false)
+            } else {
+                completion(true)
+            }
+        }
+    }
+    
+    // MARK: - Listar (Tiempo Real)
+    func escucharUsuarios(completion: @escaping ([Usuario]) -> Void) -> ListenerRegistration {
+        return db.collection(coleccion)
+            .order(by: "nombre")
+            .addSnapshotListener { snapshot, error in
+                guard let docs = snapshot?.documents else {
+                    completion([])
+                    return
+                }
+                
+                var lista: [Usuario] = []
+                for doc in docs {
+                    let data = doc.data()
+                    let u = Usuario(
+                        id: doc.documentID,
+                        nombre: data["nombre"] as? String ?? "",
+                        email: data["email"] as? String ?? "",
+                        clave: data["clave"] as? String ?? "",
+                        rol: data["rol"] as? String ?? "usuario"
+                    )
+                    lista.append(u)
+                }
+                completion(lista)
+            }
+    }
+    
+    // MARK: - Editar
+    func editar(usuario: Usuario, completion: @escaping (Bool) -> Void) {
+        guard let id = usuario.id else { return }
         
-        do {
-            try bd.save()
-            salida = 1
-        } catch let x as NSError {
-            print(x.localizedDescription)
+        let datos: [String: Any] = [
+            "nombre": usuario.nombre,
+            "email": usuario.email,
+            "clave": usuario.clave
+        ]
+        
+        db.collection(coleccion).document(id).updateData(datos) { error in
+            completion(error == nil)
         }
-        return salida
     }
-
-    func update(bean: UsuarioEntity) -> Int {
-        var salida = -1
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        do {
-            try bd.save()
-            salida = 1
-        } catch let x as NSError {
-            print(x.localizedDescription)
+    
+    // MARK: - Eliminar
+    func eliminar(id: String, completion: @escaping (Bool) -> Void) {
+        db.collection(coleccion).document(id).delete { error in
+            completion(error == nil)
         }
-        return salida
-    }
-
-    func delete(bean: UsuarioEntity) -> Int {
-        var salida = -1
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        do {
-            bd.delete(bean)
-            try bd.save()
-            salida = 1
-        } catch let x as NSError {
-            print(x.localizedDescription)
-        }
-        return salida
-    }
-
-    func findAll() -> [UsuarioEntity] {
-        var lista: [UsuarioEntity] = []
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        do {
-            let datos = UsuarioEntity.fetchRequest()
-            lista = try bd.fetch(datos) as! [UsuarioEntity]
-        } catch let x as NSError {
-            print(x.localizedDescription)
-        }
-        return lista
     }
 }

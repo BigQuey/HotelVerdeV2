@@ -5,13 +5,13 @@
 //  Created by DAMII on 20/12/25.
 //
 
+import Foundation
 import UIKit
 
 struct Usuario {
-    var codigo: Int32
+    var id: String?
     var nombre: String
-    var apellido: String
-    var correo: String
-    var password: String
+    var email: String
+    var clave: String
     var rol: String
 }

@@ -7,23 +7,81 @@
 
 import UIKit
 
-class ReservaListaUsuarioViewController: UIViewController {
+import UIKit
+import FirebaseFirestore
 
+class ReservaListaUsuarioViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+
+    @IBOutlet weak var tvReservas: UITableView! // Conectar en Storyboard
+    
+    var listaReservas: [Reserva] = []
+    var listener: ListenerRegistration?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        tvReservas.delegate = self
+        tvReservas.dataSource = self
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        cargarReservas()
     }
-    */
-
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        listener?.remove()
+    }
+    
+    func cargarReservas() {
+        let dao = ReservaDAO()
+        // Reutilizamos la función de escuchar en tiempo real
+        listener = dao.escucharReservas { [weak self] reservas in
+            self?.listaReservas = reservas
+            DispatchQueue.main.async {
+                self?.tvReservas.reloadData()
+            }
+        }
+    }
+    
+    // MARK: - Tabla
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return listaReservas.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "celdaReservaUsuario", for: indexPath)
+        
+        let reserva = listaReservas[indexPath.row]
+        
+        // Formatear fechas para que se vean bien (ej: 24 dic 2025)
+        let df = DateFormatter()
+        df.dateStyle = .medium
+        let inicio = df.string(from: reserva.fechaInicio)
+        let fin = df.string(from: reserva.fechaFin)
+        
+        cell.textLabel?.text = reserva.nombreHotel
+        cell.detailTextLabel?.text = "Del \(inicio) al \(fin)"
+        
+        return cell
+    }
+    
+    // MARK: - Ir al Detalle (Edición/Cancelación)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let reservaSeleccionada = listaReservas[indexPath.row]
+        performSegue(withIdentifier: "verDetalleReserva", sender: reservaSeleccionada)
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "verDetalleReserva" {
+            if let destino = segue.destination as? ReservaDetalleUsuarioViewController {
+                destino.reservaRecibida = sender as? Reserva
+            }
+        }
+    }
+    
+    @IBAction func btnVolverTapped(_ sender: UIButton) {
+        dismiss(animated: true)
+    }
 }

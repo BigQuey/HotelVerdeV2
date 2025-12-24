@@ -25,5 +25,7 @@ class ComentarioListaUsuarioViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
+    @IBAction func btnVolverTapped(_ sender: UIButton) {
+        dismiss(animated: true)
+    }
 }
