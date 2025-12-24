@@ -8,8 +8,7 @@
 import UIKit
 
 struct Comentario {
-    var codigo: Int32
-    var calificacion: Int16
+    var id: String
+    var contenido: String
     var fecha: Date
-    var mensaje: String
 }

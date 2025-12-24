@@ -40,44 +40,34 @@ class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UI
         // no solo con respecto a su contenedor padre.
         guard let frameGlobal = tfUsuario.superview?.convert(tfUsuario.frame, to: self.view) else { return }
 
-        // 2. Asignamos ese frame real a la tabla
         tableViewSugerencias.frame = CGRect(
             x: frameGlobal.origin.x,
-            y: frameGlobal.origin.y + frameGlobal.height, // Justo debajo
+            y: frameGlobal.origin.y + frameGlobal.height,
             width: frameGlobal.width,
             height: 150
         )
-        
-        // 3. CAPA VISUAL (Z-Position)
-        // A veces bringSubviewToFront no es suficiente si hay capas complejas.
-        // zPosition = 1 garantiza que flote encima de todo.
+
         tableViewSugerencias.layer.zPosition = 1
-        
-        // 4. Color de fondo (Por seguridad)
-        // Si la tabla es transparente, no verás nada.
+
         tableViewSugerencias.backgroundColor = .white
         
-        // Aseguramos sombra para que se distinga del fondo
         tableViewSugerencias.layer.shadowColor = UIColor.black.cgColor
         tableViewSugerencias.layer.shadowOpacity = 0.3
         tableViewSugerencias.layer.shadowOffset = CGSize(width: 0, height: 2)
         tableViewSugerencias.layer.shadowRadius = 3
     }
     func configurarAutocomplete() {
-        // 1. Configurar la tabla visualmente
         tableViewSugerencias.delegate = self
         tableViewSugerencias.dataSource = self
         tableViewSugerencias.register(
             UITableViewCell.self, forCellReuseIdentifier: "celdaUsuario")
-        tableViewSugerencias.isHidden = true  // Empieza oculta
+        tableViewSugerencias.isHidden = true
         tableViewSugerencias.layer.borderWidth = 1
         tableViewSugerencias.layer.borderColor = UIColor.lightGray.cgColor
         tableViewSugerencias.layer.cornerRadius = 5
 
-        // 2. Agregar la tabla a la vista
         view.addSubview(tableViewSugerencias)
 
-        // 3. Detectar cuando el usuario escribe
         tfUsuario.addTarget(
             self, action: #selector(filtrarUsuarios), for: .editingChanged)
     }
@@ -106,7 +96,6 @@ class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UI
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
             let celda = tableView.dequeueReusableCell(withIdentifier: "celdaUsuario", for: indexPath)
             celda.textLabel?.text = usuariosFiltrados[indexPath.row]
-            // Estilo visual simple
             celda.backgroundColor = .white
             celda.textLabel?.textColor = .black
             return celda
