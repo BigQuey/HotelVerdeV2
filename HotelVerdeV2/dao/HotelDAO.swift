@@ -10,32 +10,26 @@ import FirebaseFirestore
 
 class HotelDAO {
     
-    // Referencias
     let db = Firestore.firestore()
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
-    // MARK: - 1. GUARDAR (Híbrido)
-    // Guarda en Firebase primero, y si tiene éxito, guarda en Core Data
     func save(bean: Hotel, completion: @escaping (Bool) -> Void) {
         
-        // A. Preparar datos para Firebase
         let datosFirebase: [String: Any] = [
             "nombre": bean.nombre,
             "descripcion": bean.descripcion,
             "ciudad": bean.ciudad,
             "servicio": bean.servicio,
-            "codigo": bean.codigo // Tu código numérico visible
+            "codigo": bean.codigo
         ]
         
-        // B. Intentar guardar en la Nube
         var ref: DocumentReference? = nil
         ref = db.collection("hoteles").addDocument(data: datosFirebase) { error in
             
             if let error = error {
                 print("Error en Firebase: \(error)")
-                completion(false) // Falló la nube
+                completion(false)
             } else {
-                // C. ¡Éxito en la nube! Ahora guardamos en Core Data (Local)
                 print("Guardado en Firebase con ID: \(ref!.documentID)")
                 self.saveLocal(bean: bean, firebaseID: ref!.documentID)
                 completion(true)
@@ -43,10 +37,9 @@ class HotelDAO {
         }
     }
     
-    // Función auxiliar privada para guardar en Core Data
     private func saveLocal(bean: Hotel, firebaseID: String) {
         let entidad = HotelEntity(context: context)
-        entidad.id = firebaseID       // Guardamos el ID de la nube
+        entidad.id = firebaseID
         entidad.codigo = bean.codigo
         entidad.nombre = bean.nombre
         entidad.descripcion = bean.descripcion
@@ -61,22 +54,17 @@ class HotelDAO {
         }
     }
     
-    // MARK: - 2. LISTAR (Sincronización)
-    // Esta función es especial: Devuelve los datos locales RÁPIDO y luego descarga los nuevos
+
     func sincronizarHoteles(completion: @escaping ([Hotel]) -> Void) {
         
-        // 1. Primero busca en Firebase (La verdad absoluta)
         db.collection("hoteles").getDocuments { snapshot, error in
             
             if let error = error {
                 print("Sin internet o error nube: \(error). Usando datos locales.")
-                // Si falla internet, devolvemos lo que haya en Core Data
                 completion(self.listarLocalmente())
                 return
             }
-            
-            // 2. Si hay internet, borramos la caché vieja de Core Data y guardamos la nueva
-            // (Esta es una estrategia simple: Borrar todo y re-llenar para evitar duplicados)
+
             self.borrarTodoCoreData()
             
             var listaNueva: [Hotel] = []
@@ -84,7 +72,6 @@ class HotelDAO {
             for doc in snapshot!.documents {
                 let data = doc.data()
                 
-                // Crear objeto Swift
                 let hotel = Hotel(
                     id: doc.documentID,
                     codigo: data["codigo"] as? String ?? "0",
@@ -96,11 +83,9 @@ class HotelDAO {
                 
                 listaNueva.append(hotel)
                 
-                // Guardar copia fresca en Core Data
                 self.saveLocal(bean: hotel, firebaseID: doc.documentID)
             }
             
-            // Devolver la lista actualizada de la nube
             completion(listaNueva)
         }
     }

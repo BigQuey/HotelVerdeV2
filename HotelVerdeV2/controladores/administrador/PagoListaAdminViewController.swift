@@ -28,7 +28,7 @@ class PagoListaAdminViewController: UIViewController, UITableViewDelegate, UITab
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        listener?.remove() // Dejar de escuchar al salir
+        listener?.remove()
     }
     
     func cargarPagos() {
@@ -41,7 +41,6 @@ class PagoListaAdminViewController: UIViewController, UITableViewDelegate, UITab
         }
     }
     
-    // MARK: - Tabla
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return listaPagos.count
     }
@@ -51,19 +50,16 @@ class PagoListaAdminViewController: UIViewController, UITableViewDelegate, UITab
         
         let item = listaPagos[indexPath.row]
         
-        // Formatear fecha
         let df = DateFormatter()
         df.dateStyle = .medium
         let fechaTexto = df.string(from: item.fecha)
         
-        // Configurar textos (ajusta si usas celda personalizada)
         cell.textLabel?.text = "\(item.nombreCliente) - S/ \(item.monto)"
         cell.detailTextLabel?.text = "\(fechaTexto) - \(item.metodo)"
         
         return cell
     }
     
-    // MARK: - Botón Nuevo Pago
     @IBAction func btnNuevoPagoTapped(_ sender: UIButton) {
         performSegue(withIdentifier: "irNuevoPago", sender: self)
     }

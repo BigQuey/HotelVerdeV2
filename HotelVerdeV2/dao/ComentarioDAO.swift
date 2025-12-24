@@ -12,12 +12,11 @@ import UIKit
 class ComentarioDAO {
     let db = Firestore.firestore()
 
-    // Guardar nuevo comentario
     func guardar(comentario: Comentario, completion: @escaping (Bool) -> Void) {
 
         let datos: [String: Any] = [
             "contenido": comentario.contenido,
-            "fecha": Timestamp(date: comentario.fecha),  // Firebase usa Timestamp
+            "fecha": Timestamp(date: comentario.fecha),
         ]
 
         db.collection("comentarios").addDocument(data: datos) { error in
@@ -30,12 +29,11 @@ class ComentarioDAO {
         }
     }
 
-    // Listar comentarios en tiempo real
     func escucharComentarios(completion: @escaping ([Comentario]) -> Void)
         -> ListenerRegistration
     {
         return db.collection("comentarios")
-            .order(by: "fecha", descending: true)  // Los más nuevos primero
+            .order(by: "fecha", descending: true)
             .addSnapshotListener { snapshot, error in
                 guard let docs = snapshot?.documents else {
                     completion([])

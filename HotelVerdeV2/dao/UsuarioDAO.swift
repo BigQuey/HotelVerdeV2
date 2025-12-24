@@ -15,8 +15,7 @@ class UsuarioDAO {
     
     let db = Firestore.firestore()
     let coleccion = "usuarios"
-    
-    // MARK: - Guardar (Nuevo)
+
     func guardar(usuario: Usuario, completion: @escaping (Bool) -> Void) {
         let datos: [String: Any] = [
             "nombre": usuario.nombre,
@@ -36,7 +35,7 @@ class UsuarioDAO {
         }
     }
     
-    // MARK: - Listar (Tiempo Real)
+
     func escucharUsuarios(completion: @escaping ([Usuario]) -> Void) -> ListenerRegistration {
         return db.collection(coleccion)
             .order(by: "nombre")
@@ -62,7 +61,6 @@ class UsuarioDAO {
             }
     }
     
-    // MARK: - Editar
     func editar(usuario: Usuario, completion: @escaping (Bool) -> Void) {
         guard let id = usuario.id else { return }
         
@@ -76,8 +74,7 @@ class UsuarioDAO {
             completion(error == nil)
         }
     }
-    
-    // MARK: - Eliminar
+
     func eliminar(id: String, completion: @escaping (Bool) -> Void) {
         db.collection(coleccion).document(id).delete { error in
             completion(error == nil)

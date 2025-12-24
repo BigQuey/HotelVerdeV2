@@ -9,7 +9,6 @@ import UIKit
 
 class GeneraReservaAdminViewController: UIViewController {
 
-    // MARK: - Outlets (Conecta estos en el Storyboard de "NUEVA RESERVA")
     @IBOutlet weak var tfNombre: UITextField!
     @IBOutlet weak var tfApellido: UITextField!
     @IBOutlet weak var tfDNI: UITextField!
@@ -17,7 +16,6 @@ class GeneraReservaAdminViewController: UIViewController {
     @IBOutlet weak var tfFechaInicio: UITextField!
     @IBOutlet weak var tfFechaFin: UITextField!
 
-    // Variables para fechas
     private var fechaInicioSel: Date?
     private var fechaFinSel: Date?
     private let datePickerInicio = UIDatePicker()
@@ -28,10 +26,8 @@ class GeneraReservaAdminViewController: UIViewController {
         configurarFechas()
     }
 
-    // MARK: - Acción Guardar
     @IBAction func btnGuardarTapped(_ sender: UIButton) {
         
-        // 1. Validar que no haya campos vacíos
         guard let nombre = tfNombre.text, !nombre.isEmpty,
               let apellido = tfApellido.text, !apellido.isEmpty,
               let dni = tfDNI.text, !dni.isEmpty,
@@ -43,10 +39,9 @@ class GeneraReservaAdminViewController: UIViewController {
             return
         }
 
-        // 2. Crear el objeto Reserva (ID nil o vacío porque Firebase lo crea)
         let nuevaReserva = Reserva(
-            id: "", // Se generará o ignorará en el DAO al crear
-            idHotel: "", // Puedes manejar lógica de IDs de hotel si tienes, sino vacío
+            id: "",
+            idHotel: "",
             nombreHotel: hotel,
             nombreCliente: nombre,
             apellidoCliente: apellido,
@@ -56,9 +51,7 @@ class GeneraReservaAdminViewController: UIViewController {
             fechaCreacion: Date()
         )
 
-        // 3. Llamar al DAO
         let dao = ReservaDAO()
-        // Asumiendo que tu DAO tiene un método 'guardar' o 'agregar' similar a 'actualizar'
         dao.guardar(reserva: nuevaReserva) { exito in
             if exito {
                 self.mostrarAlerta(titulo: "Éxito", mensaje: "Reserva creada correctamente") {
@@ -74,7 +67,6 @@ class GeneraReservaAdminViewController: UIViewController {
         dismiss(animated: true)
     }
 
-    // MARK: - Configuración de Calendarios (Reutilizado del otro controller)
     func configurarFechas() {
         crearDatePicker(picker: datePickerInicio, textField: tfFechaInicio, selector: #selector(cambioFechaInicio))
         crearDatePicker(picker: datePickerFin, textField: tfFechaFin, selector: #selector(cambioFechaFin))

@@ -13,7 +13,6 @@ class ReservaDAO {
     let db = Firestore.firestore()
     let coleccion = "reservas"
     
-    // MARK: - Guardar Reserva
     func guardar(reserva: Reserva, completion: @escaping (Bool) -> Void) {
         
         let datos: [String: Any] = [
@@ -36,8 +35,7 @@ class ReservaDAO {
         }
     }
     
-    // MARK: - Listar Todas (Tiempo Real)
-    // Usamos addSnapshotListener para que si agregas una, aparezca sola.
+
     func escucharReservas(completion: @escaping ([Reserva]) -> Void) -> ListenerRegistration {
         
         return db.collection(coleccion)
@@ -54,7 +52,6 @@ class ReservaDAO {
                 for doc in documents {
                     let data = doc.data()
                     
-                    // Convertir Timestamp de Firebase a Date de Swift
                     let timestampInicio = data["fechaInicio"] as? Timestamp
                     let timestampFin = data["fechaFin"] as? Timestamp
                     let timestampCreacion = data["fechaCreacion"] as? Timestamp
@@ -87,7 +84,6 @@ class ReservaDAO {
                 "nombreHotel": reserva.nombreHotel,
                 "fechaInicio": reserva.fechaInicio,
                 "fechaFin": reserva.fechaFin
-                // No actualizamos fechaCreacion
             ]
             
             db.collection(coleccion).document(idReserva).updateData(datos) { error in
@@ -95,7 +91,6 @@ class ReservaDAO {
             }
         }
         
-        // MARK: - Eliminar Reserva
         func eliminar(id: String, completion: @escaping (Bool) -> Void) {
             db.collection(coleccion).document(id).delete { error in
                 completion(error == nil)
