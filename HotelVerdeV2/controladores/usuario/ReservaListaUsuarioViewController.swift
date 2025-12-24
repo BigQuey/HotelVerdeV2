@@ -1,9 +1,3 @@
-//
-//  ReservaListaUsuarioViewController.swift
-//  HotelVerdeV2
-//
-//  Created by DAMII on 22/12/25.
-//
 
 import UIKit
 
@@ -12,7 +6,7 @@ import FirebaseFirestore
 
 class ReservaListaUsuarioViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
-    @IBOutlet weak var tvReservas: UITableView! // Conectar en Storyboard
+    @IBOutlet weak var tvReservas: UITableView!
     
     var listaReservas: [Reserva] = []
     var listener: ListenerRegistration?
@@ -44,7 +38,6 @@ class ReservaListaUsuarioViewController: UIViewController, UITableViewDelegate, 
         }
     }
     
-    // MARK: - Tabla
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return listaReservas.count
     }
@@ -54,7 +47,7 @@ class ReservaListaUsuarioViewController: UIViewController, UITableViewDelegate, 
         
         let reserva = listaReservas[indexPath.row]
         
-        // Formatear fechas para que se vean bien (ej: 24 dic 2025)
+        
         let df = DateFormatter()
         df.dateStyle = .medium
         let inicio = df.string(from: reserva.fechaInicio)
@@ -66,7 +59,7 @@ class ReservaListaUsuarioViewController: UIViewController, UITableViewDelegate, 
         return cell
     }
     
-    // MARK: - Ir al Detalle (Edición/Cancelación)
+   
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let reservaSeleccionada = listaReservas[indexPath.row]
         performSegue(withIdentifier: "verDetalleReserva", sender: reservaSeleccionada)

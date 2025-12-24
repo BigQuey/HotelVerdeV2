@@ -1,15 +1,8 @@
-//
-//  ReservaDetalleUsuarioViewController.swift
-//  HotelVerdeV2
-//
-//  Created by DAMII on 22/12/25.
-//
 
 import UIKit
 
 class ReservaDetalleUsuarioViewController: UIViewController {
 
-    // MARK: - Outlets
     @IBOutlet weak var lblNombreHotel: UILabel! // O TextField deshabilitado
     @IBOutlet weak var tfFechaInicio: UITextField!
     @IBOutlet weak var tfFechaFin: UITextField!
@@ -46,7 +39,7 @@ class ReservaDetalleUsuarioViewController: UIViewController {
         }
     }
 
-    // MARK: - Acción: GUARDAR CAMBIOS (Editar Fechas)
+
     @IBAction func guardarCambiosTapped(_ sender: UIButton) {
         guard let r = reservaRecibida,
               let id = r.id,
@@ -79,7 +72,7 @@ class ReservaDetalleUsuarioViewController: UIViewController {
         }
     }
     
-    // MARK: - Acción: CANCELAR RESERVA (Eliminar)
+    
     @IBAction func cancelarReservaTapped(_ sender: UIButton) {
         guard let id = reservaRecibida?.id else { return }
         
@@ -101,7 +94,7 @@ class ReservaDetalleUsuarioViewController: UIViewController {
         dismiss(animated: true)
     }
     
-    // MARK: - Configuración Calendarios
+    
     func configurarFechas() {
         configurarPicker(picker: pickerInicio, textField: tfFechaInicio, action: #selector(cambioInicio))
         configurarPicker(picker: pickerFin, textField: tfFechaFin, action: #selector(cambioFin))
