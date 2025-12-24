@@ -19,7 +19,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -137,19 +136,15 @@ class DatastoreSerializer {
   util::StatusOr<std::vector<model::Document>> MergeLookupResponses(
       const std::vector<grpc::ByteBuffer>& responses) const;
 
-  // TODO(b/443765747) Revert back to absl::flat_hash_map after the absl version
-  // is upgraded to later than 20250127.0
   nanopb::Message<google_firestore_v1_RunAggregationQueryRequest>
   EncodeAggregateQueryRequest(
       const core::Query& query,
       const std::vector<model::AggregateField>& aggregates,
-      std::unordered_map<std::string, std::string>& aliasMap) const;
+      absl::flat_hash_map<std::string, std::string>& aliasMap) const;
 
-  // TODO(b/443765747) Revert back to absl::flat_hash_map after the absl version
-  // is upgraded to later than 20250127.0
   util::StatusOr<model::ObjectValue> DecodeAggregateQueryResponse(
       const grpc::ByteBuffer& response,
-      const std::unordered_map<std::string, std::string>& aliasMap) const;
+      const absl::flat_hash_map<std::string, std::string>& aliasMap) const;
 
   const Serializer& serializer() const {
     return serializer_;

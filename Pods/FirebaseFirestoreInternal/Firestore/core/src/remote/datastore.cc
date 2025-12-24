@@ -16,7 +16,6 @@
 
 #include "Firestore/core/src/remote/datastore.h"
 
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 
@@ -282,9 +281,7 @@ void Datastore::RunAggregateQueryWithCredentials(
     const core::Query& query,
     const std::vector<AggregateField>& aggregates,
     api::AggregateQueryCallback&& callback) {
-  // TODO(b/443765747) Revert back to absl::flat_hash_map after the absl version
-  // is upgraded to later than 20250127.0
-  std::unordered_map<std::string, std::string> aliasMap;
+  absl::flat_hash_map<std::string, std::string> aliasMap;
   grpc::ByteBuffer message =
       MakeByteBuffer(datastore_serializer_.EncodeAggregateQueryRequest(
           query, aggregates, aliasMap));

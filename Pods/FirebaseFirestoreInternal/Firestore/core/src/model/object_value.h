@@ -21,7 +21,6 @@
 #include <ostream>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <utility>
 
 #include "Firestore/Protos/nanopb/google/firestore/v1/document.nanopb.h"
@@ -79,12 +78,10 @@ class ObjectValue {
    * @param count Count of fields in `fields_entry`.
    * @return The created `ObjectValue`.
    */
-  // TODO(b/443765747) Revert back to absl::flat_hash_map after the absl version
-  // is upgraded to later than 20250127.0
   static ObjectValue FromAggregateFieldsEntry(
       google_firestore_v1_AggregationResult_AggregateFieldsEntry* fields_entry,
       pb_size_t count,
-      const std::unordered_map<std::string, std::string>& aliasMap);
+      const absl::flat_hash_map<std::string, std::string>& aliasMap);
 
   /** Recursively extracts the FieldPaths that are set in this ObjectValue. */
   FieldMask ToFieldMask() const;

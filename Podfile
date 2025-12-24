@@ -1,14 +1,17 @@
-# Uncomment the next line to define a global platform for your project
-# platform :ios, '9.0'
+# 1. Descomenta esta línea y sube la versión a 13.0 o superior
+platform :ios, '13.0'
 
 target 'HotelVerdeV2' do
-  # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
   # Pods for HotelVerdeV2
-pod 'FirebaseCore'        # Obligatorio
-pod 'FirebaseAuth'        # (Opcional) Si usarás autenticación
-pod 'FirebaseFirestore'   # (Opcional) Si usarás base de datos
-pod 'FirebaseStorage'
+  
+  # 2. Usa esta sintaxis con la barra '/' (es la estándar actual)
+  pod 'Firebase/Auth'       # Incluye Core automáticamente
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Storage'
+  
+  # Opcional: Analytics es muy recomendado para ver si la app crashea
+  # pod 'Firebase/Analytics' 
 
 end

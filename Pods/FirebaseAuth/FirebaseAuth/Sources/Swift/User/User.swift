@@ -58,10 +58,10 @@ extension User: NSSecureCoding {}
   /// The tenant ID of the current user. `nil` if none is available.
   @objc public private(set) var tenantID: String?
 
-  #if os(iOS) || os(macOS)
+  #if os(iOS)
     /// Multi factor object associated with the user.
     ///
-    /// This property is available on iOS and macOS.
+    /// This property is available on iOS only.
     @objc public private(set) var multiFactor: MultiFactor
   #endif
 
@@ -1066,7 +1066,7 @@ extension User: NSSecureCoding {}
     isEmailVerified = false
     metadata = UserMetadata(withCreationDate: nil, lastSignInDate: nil)
     tenantID = nil
-    #if os(iOS) || os(macOS)
+    #if os(iOS)
       multiFactor = MultiFactor(withMFAEnrollments: [])
     #endif
     uid = ""
@@ -1297,7 +1297,7 @@ extension User: NSSecureCoding {}
       }
     }
     providerDataRaw = providerData
-    #if os(iOS) || os(macOS)
+    #if os(iOS)
       if let enrollments = user.mfaEnrollments {
         multiFactor = MultiFactor(withMFAEnrollments: enrollments)
       }
@@ -1591,22 +1591,13 @@ extension User: NSSecureCoding {}
   /// on the  global work thread in the future.
   func internalGetToken(forceRefresh: Bool = false,
                         backend: AuthBackend,
-                        callback: @escaping (String?, Error?) -> Void,
-                        callCallbackOnMain: Bool = false) {
+                        callback: @escaping (String?, Error?) -> Void) {
     Task {
       do {
         let token = try await internalGetTokenAsync(forceRefresh: forceRefresh, backend: backend)
-        if callCallbackOnMain {
-          Auth.wrapMainAsync(callback: callback, with: .success(token))
-        } else {
-          callback(token, nil)
-        }
+        callback(token, nil)
       } catch {
-        if callCallbackOnMain {
-          Auth.wrapMainAsync(callback: callback, with: .failure(error))
-        } else {
-          callback(nil, error)
-        }
+        callback(nil, error)
       }
     }
   }
@@ -1718,7 +1709,7 @@ extension User: NSSecureCoding {}
       coder.encode(auth.requestConfiguration.appID, forKey: kFirebaseAppIDCodingKey)
     }
     coder.encode(tokenService, forKey: kTokenServiceCodingKey)
-    #if os(iOS) || os(macOS)
+    #if os(iOS)
       coder.encode(multiFactor, forKey: kMultiFactorCodingKey)
     #endif
   }
@@ -1747,7 +1738,7 @@ extension User: NSSecureCoding {}
       as? [String: UserInfoImpl]
     let metadata = coder.decodeObject(of: UserMetadata.self, forKey: kMetadataCodingKey)
     let tenantID = coder.decodeObject(of: NSString.self, forKey: kTenantIDCodingKey) as? String
-    #if os(iOS) || os(macOS)
+    #if os(iOS)
       let multiFactor = coder.decodeObject(of: MultiFactor.self, forKey: kMultiFactorCodingKey)
     #endif
     self.tokenService = tokenService
@@ -1778,7 +1769,7 @@ extension User: NSSecureCoding {}
     backend = AuthBackend(rpcIssuer: AuthBackendRPCIssuer())
 
     userProfileUpdate = UserProfileUpdate()
-    #if os(iOS) || os(macOS)
+    #if os(iOS)
       self.multiFactor = multiFactor ?? MultiFactor()
       super.init()
       multiFactor?.user = self
