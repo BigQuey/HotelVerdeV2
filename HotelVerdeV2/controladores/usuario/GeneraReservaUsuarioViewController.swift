@@ -1,26 +1,21 @@
-//
-//  GeneraReservaUsuarioViewController.swift
-//  HotelVerdeV2
-//
-//  Created by DAMII on 22/12/25.
-//
+
 
 import UIKit
 import FirebaseFirestore
 class GeneraReservaUsuarioViewController: UIViewController {
-    // MARK: - Outlets (¡Créalos en el Storyboard!)
-        @IBOutlet weak var imgHotel: UIImageView! // Si tienes imagen
-        @IBOutlet weak var lblNombreHotel: UILabel! // Para mostrar dónde está reservando
+    
+        @IBOutlet weak var imgHotel: UIImageView!
+        @IBOutlet weak var lblNombreHotel: UILabel!
         
         @IBOutlet weak var tfNombre: UITextField!
         @IBOutlet weak var tfDNI: UITextField!
         @IBOutlet weak var tfFechaInicio: UITextField!
         @IBOutlet weak var tfFechaFin: UITextField!
         
-        // VARIABLE CLAVE: Aquí llega el hotel que seleccionó en la pantalla anterior
+    
         var hotelRecibido: Hotel?
         
-        // Variables para fechas
+        
         private var fechaInicioSel: Date?
         private var fechaFinSel: Date?
         private let pickerInicio = UIDatePicker()
@@ -29,25 +24,25 @@ class GeneraReservaUsuarioViewController: UIViewController {
         override func viewDidLoad() {
             super.viewDidLoad()
             
-            // 1. Mostrar información del hotel recibido
+            // Mostrar información del hotel recibido
             if let hotel = hotelRecibido {
                 lblNombreHotel.text = "Reservando en: \(hotel.nombre)"
-                // Si tuvieras URL de imagen, aquí la cargarías
+               
             }
             
             configurarFechas()
         }
         
-        // MARK: - Guardar Reserva
+ 
         @IBAction func guardarTapped(_ sender: UIButton) {
             
-            // A. Validar que el hotel exista (seguridad)
+            // Validar que el hotel exista
             guard let hotel = hotelRecibido, let idHotel = hotel.id else {
                 print("Error: No hay hotel seleccionado")
                 return
             }
             
-            // B. Validar campos del usuario
+            // Validar campos del usuario
             guard let nombre = tfNombre.text, !nombre.isEmpty,
                   let dni = tfDNI.text, !dni.isEmpty,
                   let fInicio = fechaInicioSel,
@@ -56,21 +51,21 @@ class GeneraReservaUsuarioViewController: UIViewController {
                 return
             }
             
-            // C. Crear el objeto Reserva
+            //  Crear el objeto Reserva
             // NOTA: Usamos el ID y Nombre del hotel recibido automáticamente
             let nuevaReserva = Reserva(
                 id: nil,
                 idHotel: idHotel,           // <--- Vinculamos al ID del hotel
                 nombreHotel: hotel.nombre,  // <--- Guardamos el nombre
                 nombreCliente: nombre,
-                apellidoCliente: "",        // Si no tienes campo apellido, déjalo vacío
+                apellidoCliente: "",
                 dniCliente: dni,
                 fechaInicio: fInicio,
                 fechaFin: fFin,
                 fechaCreacion: Date()
             )
             
-            // D. Guardar usando el DAO
+            // Guardar usando el DAO
             let dao = ReservaDAO()
             dao.guardar(reserva: nuevaReserva) { exito in
                 if exito {
@@ -87,7 +82,7 @@ class GeneraReservaUsuarioViewController: UIViewController {
             dismiss(animated: true)
         }
         
-        // MARK: - Configuración Calendarios (Igual que en Admin)
+        
         func configurarFechas() {
             configurarPicker(picker: pickerInicio, textField: tfFechaInicio, action: #selector(cambioInicio))
             configurarPicker(picker: pickerFin, textField: tfFechaFin, action: #selector(cambioFin))

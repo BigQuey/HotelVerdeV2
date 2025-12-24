@@ -1,16 +1,10 @@
-//
-//  ComentarioGeneraUsuarioViewController.swift
-//  HotelVerdeV2
-//
-//  Created by DAMII on 22/12/25.
-//
+
 
 import UIKit
 
 class ComentarioGeneraUsuarioViewController: UIViewController {
 
-    // MARK: - Outlets
-    // Conecta este outlet al cuadro de texto grande (UITextView)
+    
     @IBOutlet weak var txtComentario: UITextView!
     
     override func viewDidLoad() {
@@ -18,30 +12,30 @@ class ComentarioGeneraUsuarioViewController: UIViewController {
         configurarEstiloTextView()
     }
     
-    // Hacemos que el TextView parezca una cajita con borde (por defecto viene plano)
+    
     func configurarEstiloTextView() {
         txtComentario.layer.borderColor = UIColor.lightGray.cgColor
         txtComentario.layer.borderWidth = 1.0
         txtComentario.layer.cornerRadius = 5.0
     }
 
-    // MARK: - Botón Guardar
+
     @IBAction func btnGuardarTapped(_ sender: UIButton) {
         
-        // 1. Validar que no esté vacío
+        // Validar que no esté vacío
         guard let texto = txtComentario.text, !texto.isEmpty else {
             mostrarAlerta(mensaje: "El comentario no puede estar vacío.")
             return
         }
         
-        // 2. Crear objeto
+        // Crear objeto
         let nuevoComentario = Comentario(
             id: "", // Se genera solo
             contenido: texto,
             fecha: Date()
         )
         
-        // 3. Guardar
+        // Guardar
         let dao = ComentarioDAO()
         dao.guardar(comentario: nuevoComentario) { exito in
             if exito {

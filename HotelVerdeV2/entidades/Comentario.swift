@@ -1,9 +1,3 @@
-//
-//  Comentario.swift
-//  HotelVerdeV2
-//
-//  Created by DAMII on 20/12/25.
-//
 
 import UIKit
 

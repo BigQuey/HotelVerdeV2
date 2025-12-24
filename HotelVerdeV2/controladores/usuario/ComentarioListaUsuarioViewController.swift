@@ -1,17 +1,12 @@
-//
-//  ComentarioListaUsuarioViewController.swift
-//  HotelVerdeV2
-//
-//  Created by DAMII on 22/12/25.
-//
 
 import UIKit
 import FirebaseFirestore
 
 class ComentarioListaUsuarioViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
-    // MARK: - Outlets
+
     // CONECTA ESTO A LA TABLA EN EL STORYBOARD
+    
     @IBOutlet weak var tvComentarios: UITableView!
 
     var listaComentarios: [Comentario] = []
@@ -20,17 +15,17 @@ class ComentarioListaUsuarioViewController: UIViewController, UITableViewDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Configuración básica de tabla
+        
         tvComentarios.delegate = self
         tvComentarios.dataSource = self
         
-        // Cargar datos
+    
         cargarDatos()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        // Dejar de escuchar cambios al salir para ahorrar batería/datos
+    
         listener?.remove()
     }
     
@@ -50,20 +45,20 @@ class ComentarioListaUsuarioViewController: UIViewController, UITableViewDelegat
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Asegúrate de que la celda en el Storyboard tenga el Identifier "celdaComentario"
+  
         let cell = tableView.dequeueReusableCell(withIdentifier: "celdaComentario", for: indexPath)
         
         let item = listaComentarios[indexPath.row]
         
-        // Formatear la fecha
+        
         let df = DateFormatter()
         df.dateStyle = .medium
         df.timeStyle = .short
         let fechaTexto = df.string(from: item.fecha)
         
-        // Configurar textos
+        
         cell.textLabel?.text = item.contenido
-        cell.textLabel?.numberOfLines = 0 // Permitir que el texto sea multilínea
+        cell.textLabel?.numberOfLines = 0 
         cell.detailTextLabel?.text = fechaTexto
         
         return cell
@@ -71,8 +66,7 @@ class ComentarioListaUsuarioViewController: UIViewController, UITableViewDelegat
     
     // MARK: - Navegación
     @IBAction func btnAgregarTapped(_ sender: UIButton) {
-        // Asegúrate de que el Segue desde el botón "Agregar" hacia la siguiente pantalla
-        // tenga el identificador "irNuevoComentario"
+        
         performSegue(withIdentifier: "irNuevoComentario", sender: self)
     }
 
