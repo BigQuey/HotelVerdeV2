@@ -12,11 +12,10 @@ class HabitacionDAO {
     
     let db = Firestore.firestore()
     
-    // MARK: - Guardar Habitación
     func guardar(habitacion: Habitacion, completion: @escaping (Bool) -> Void) {
         
         let datos: [String: Any] = [
-            "idHotel": habitacion.idHotel, // IMPORTANTE
+            "idHotel": habitacion.idHotel,
             "codigo": habitacion.codigo,
             "numero": habitacion.numero,
             "precio": habitacion.precio,
@@ -35,10 +34,8 @@ class HabitacionDAO {
         }
     }
     
-    // MARK: - Listar Habitaciones de un Hotel (Filtro)
     func listarPorHotel(idHotel: String, completion: @escaping ([Habitacion]) -> Void) {
         
-        // Usamos whereField para traer SOLO las de este hotel
         db.collection("habitaciones")
             .whereField("idHotel", isEqualTo: idHotel)
             .getDocuments { snapshot, error in
@@ -74,7 +71,6 @@ class HabitacionDAO {
             }
     }
     
-    // MARK: - Eliminar
     func eliminar(idHabitacion: String, completion: @escaping (Bool) -> Void) {
         db.collection("habitaciones").document(idHabitacion).delete { error in
             completion(error == nil)

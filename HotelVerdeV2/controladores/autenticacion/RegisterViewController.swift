@@ -32,7 +32,7 @@ class RegisterViewController: UIViewController {
             let nombre = nombreTextField.text, !nombre.isEmpty,
             let apellido = apellidoTextField.text, !apellido.isEmpty
         else {
-            print("Faltan datos")  // Aquí pon una alerta
+            print("Faltan datos")
             return
         }
         Auth.auth().createUser(withEmail: email, password: password) {
@@ -43,16 +43,14 @@ class RegisterViewController: UIViewController {
                 return
             }
 
-            // 3. Si se creó con éxito, guardar datos extra en Firestore
             guard let uid = result?.user.uid else { return }
 
-            // Creamos el diccionario de datos (coincidiendo con tu struct Usuario)
             let datosUsuario: [String: Any] = [
                 "uid": uid,
                 "nombre": nombre,
                 "apellido": apellido,
                 "correo": email,
-                "rol": "usuario",  // Por defecto "usuario". Cambia a "admin" si es necesario.
+                "rol": "usuario",
             ]
 
             self.db.collection("usuarios").document(uid).setData(datosUsuario) {
@@ -61,7 +59,6 @@ class RegisterViewController: UIViewController {
                     print("Error guardando datos en Firestore: \(error)")
                 } else {
                     print("¡Usuario registrado y guardado!")
-                    // Aquí cierras la vista para volver al login o vas al Home
                     self.dismiss(animated: true, completion: nil)
                 }
             }

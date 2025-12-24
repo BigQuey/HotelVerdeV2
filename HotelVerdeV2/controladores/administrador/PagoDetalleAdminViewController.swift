@@ -5,9 +5,11 @@
 //  Created by DAMII on 22/12/25.
 //
 
-import UIKit
 import FirebaseFirestore
-class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UITableViewDelegate, UITableViewDataSource
+import UIKit
+
+class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate,
+    UIPickerViewDataSource, UITableViewDelegate, UITableViewDataSource
 {
 
     @IBOutlet weak var tfUsuario: UITextField!
@@ -18,7 +20,10 @@ class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UI
     private var fechaSeleccionada: Date?
     private let datePicker = UIDatePicker()
     // Variables para el selector de Método
-    var listaTodosUsuarios: [String] = ["Juan Perez", "Maria Delgado", "Carlos Ruiz", "Ana Gomez", "Hotel Admin", "Pedro Castillo", "Luisa Lane"]
+    var listaTodosUsuarios: [String] = [
+        "Juan Perez", "Maria Delgado", "Carlos Ruiz", "Ana Gomez",
+        "Hotel Admin", "Pedro Castillo", "Luisa Lane",
+    ]
     private let pickerView = UIPickerView()
     private let opcionesPago = [
         "Efectivo", "Yape", "Plin", "Tarjeta Débito", "Tarjeta Crédito",
@@ -34,11 +39,14 @@ class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UI
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         // 1. CONVERSIÓN DE COORDENADAS (IMPORTANTE)
         // Calculamos dónde está el campo de texto con respecto a TODA la pantalla,
         // no solo con respecto a su contenedor padre.
-        guard let frameGlobal = tfUsuario.superview?.convert(tfUsuario.frame, to: self.view) else { return }
+        guard
+            let frameGlobal = tfUsuario.superview?.convert(
+                tfUsuario.frame, to: self.view)
+        else { return }
 
         tableViewSugerencias.frame = CGRect(
             x: frameGlobal.origin.x,
@@ -50,7 +58,7 @@ class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UI
         tableViewSugerencias.layer.zPosition = 1
 
         tableViewSugerencias.backgroundColor = .white
-        
+
         tableViewSugerencias.layer.shadowColor = UIColor.black.cgColor
         tableViewSugerencias.layer.shadowOpacity = 0.3
         tableViewSugerencias.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -73,61 +81,63 @@ class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UI
     }
     @objc func filtrarUsuarios() {
         guard let texto = tfUsuario.text, !texto.isEmpty else {
-                usuariosFiltrados.removeAll()
-                tableViewSugerencias.isHidden = true
-                return
-            }
-            
-            usuariosFiltrados = listaTodosUsuarios.filter { usuario in
-                return usuario.lowercased().contains(texto.lowercased())
-            }
-            
-            // ---> AGREGA ESTA LÍNEA <---
-            print("Texto: \(texto) | Encontrados: \(usuariosFiltrados.count) | Frame Tabla: \(tableViewSugerencias.frame)")
-            
-            tableViewSugerencias.isHidden = usuariosFiltrados.isEmpty
-            tableViewSugerencias.reloadData()
-        }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return usuariosFiltrados.count
-        }
-        
-        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            let celda = tableView.dequeueReusableCell(withIdentifier: "celdaUsuario", for: indexPath)
-            celda.textLabel?.text = usuariosFiltrados[indexPath.row]
-            celda.backgroundColor = .white
-            celda.textLabel?.textColor = .black
-            return celda
-        }
-        
-        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-            // 1. Poner el nombre seleccionado en el campo de texto
-            tfUsuario.text = usuariosFiltrados[indexPath.row]
-            
-            // 2. Ocultar la tabla y limpiar filtro
+            usuariosFiltrados.removeAll()
             tableViewSugerencias.isHidden = true
-            tfUsuario.resignFirstResponder() // Opcional: bajar teclado al seleccionar
-            
-            // Efecto visual de deselección
-            tableView.deselectRow(at: indexPath, animated: true)
+            return
         }
-    
-    // MARK: - Configuración de Método (NUEVO)
+
+        usuariosFiltrados = listaTodosUsuarios.filter { usuario in
+            return usuario.lowercased().contains(texto.lowercased())
+        }
+
+        // ---> AGREGA ESTA LÍNEA <---
+        print(
+            "Texto: \(texto) | Encontrados: \(usuariosFiltrados.count) | Frame Tabla: \(tableViewSugerencias.frame)"
+        )
+
+        tableViewSugerencias.isHidden = usuariosFiltrados.isEmpty
+        tableViewSugerencias.reloadData()
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int)
+        -> Int
+    {
+        return usuariosFiltrados.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
+        -> UITableViewCell
+    {
+        let celda = tableView.dequeueReusableCell(
+            withIdentifier: "celdaUsuario", for: indexPath)
+        celda.textLabel?.text = usuariosFiltrados[indexPath.row]
+        celda.backgroundColor = .white
+        celda.textLabel?.textColor = .black
+        return celda
+    }
+
+    func tableView(
+        _ tableView: UITableView, didSelectRowAt indexPath: IndexPath
+    ) {
+        tfUsuario.text = usuariosFiltrados[indexPath.row]
+
+        tableViewSugerencias.isHidden = true
+        tfUsuario.resignFirstResponder()
+
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+
     func configurarSelectorMetodo() {
         pickerView.delegate = self
         pickerView.dataSource = self
         pickerView.backgroundColor = .white
 
-        // Asignamos el picker como el teclado del campo de texto
         tfMetodo.inputView = pickerView
 
-        // Añadimos la barra con el botón "Listo"
         let toolbar = crearToolbar(selector: #selector(confirmarMetodo))
         tfMetodo.inputAccessoryView = toolbar
     }
     @objc func confirmarMetodo() {
-        // Si el usuario da "Listo" sin mover la rueda, seleccionamos el primero por defecto
         if tfMetodo.text?.isEmpty ?? true {
             tfMetodo.text = opcionesPago[0]
         }
@@ -150,7 +160,6 @@ class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UI
 
         tfFecha.inputView = datePicker
 
-        // Barra de herramientas para el teclado
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
         let btnListo = UIBarButtonItem(
@@ -177,30 +186,26 @@ class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UI
         tfFecha.text = df.string(from: datePicker.date)
     }
 
-    // MARK: - Guardar
     @IBAction func guardarTapped(_ sender: UIButton) {
-        // 1. Validar campos (Añadimos validación de método)
         guard let nombre = tfUsuario.text, !nombre.isEmpty,
             let montoTexto = tfMonto.text, !montoTexto.isEmpty,
             let montoDouble = Double(montoTexto),
             let fecha = fechaSeleccionada,
-            let metodo = tfMetodo.text, !metodo.isEmpty  // <--- Validamos método
+            let metodo = tfMetodo.text, !metodo.isEmpty
         else {
             mostrarAlerta(
                 mensaje: "Por favor complete todos los datos correctamente")
             return
         }
 
-        // 2. Crear objeto (Usamos el método seleccionado)
         let nuevoPago = Pago(
             id: nil,
             nombreCliente: nombre,
             monto: montoDouble,
             fecha: fecha,
-            metodo: metodo  // <--- Ya no es hardcodeado "Efectivo"
+            metodo: metodo
         )
 
-        // 3. Guardar con DAO
         let dao = PagoDAO()
         dao.guardar(pago: nuevoPago) { exito in
             if exito {
@@ -221,21 +226,16 @@ class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UI
         present(alert, animated: true)
     }
 
-    // MARK: - UIPickerView Delegate & DataSource Methods
-
-    // Cuántas columnas tiene la rueda (Solo 1 lista de opciones)
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
 
-    // Cuántas filas tiene la rueda
     func pickerView(
         _ pickerView: UIPickerView, numberOfRowsInComponent component: Int
     ) -> Int {
         return opcionesPago.count
     }
 
-    // Qué texto mostrar en cada fila
     func pickerView(
         _ pickerView: UIPickerView, titleForRow row: Int,
         forComponent component: Int
@@ -243,7 +243,6 @@ class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UI
         return opcionesPago[row]
     }
 
-    // Qué pasa cuando seleccionas una fila
     func pickerView(
         _ pickerView: UIPickerView, didSelectRow row: Int,
         inComponent component: Int
@@ -254,8 +253,9 @@ class PagoDetalleAdminViewController: UIViewController, UIPickerViewDelegate, UI
         let db = Firestore.firestore()
         db.collection("usuarios").getDocuments { snapshot, error in
             if let docs = snapshot?.documents {
-                // Mapeamos los documentos para sacar solo los nombres
-                self.listaTodosUsuarios = docs.map { $0["nombre"] as? String ?? "Desconocido" }
+                self.listaTodosUsuarios = docs.map {
+                    $0["nombre"] as? String ?? "Desconocido"
+                }
             }
         }
     }

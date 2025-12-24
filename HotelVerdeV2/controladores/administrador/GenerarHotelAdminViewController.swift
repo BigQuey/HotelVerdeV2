@@ -29,7 +29,6 @@ class GenerarHotelAdminViewController: UIViewController {
 
     @IBAction func guardarTapped(_ sender: UIButton) {
 
-        // 1. Validar que haya datos
         guard let codigo = tfCodigo.text, !codigo.isEmpty,
             let nombre = tfNombre.text, !nombre.isEmpty,
             let ciudad = tfCiudad.text, !ciudad.isEmpty,
@@ -40,32 +39,28 @@ class GenerarHotelAdminViewController: UIViewController {
             return
         }
 
-        // 2. Crear el diccionario de datos
-        // NOTA: Firestore genera el ID automáticamente, no necesitamos enviarlo aquí
         let datosHotel: [String: Any] = [
             "codigo": codigo,
             "nombre": nombre,
             "ciudad": ciudad,
             "descripcion": descripcion,
             "servicio": servicio,
-            "fechaCreacion": Date(),  // Útil para ordenar
+            "fechaCreacion": Date(),
         ]
 
-        // 3. Guardar en Firestore
         db.collection("hoteles").addDocument(data: datosHotel) { error in
             if let error = error {
                 print("Error al guardar: \(error.localizedDescription)")
             } else {
                 print("Hotel guardado exitosamente")
-                self.dismiss(animated: true, completion: nil)  // Cierra la ventana
+                self.dismiss(animated: true, completion: nil)
             }
         }
 
     }
-    
-    
+
     @IBAction func btnVolveer(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
     }
-    
+
 }

@@ -7,23 +7,23 @@
 
 import UIKit
 
-import UIKit
-
 class GeneraUsuarioAdminViewController: UIViewController {
 
     @IBOutlet weak var tfNombre: UITextField!
     @IBOutlet weak var tfEmail: UITextField!
     @IBOutlet weak var tfClave: UITextField!
-    
+
     @IBAction func btnAgregarTapped(_ sender: UIButton) {
         guard let nombre = tfNombre.text, !nombre.isEmpty,
-              let email = tfEmail.text, !email.isEmpty,
-              let clave = tfClave.text, !clave.isEmpty else {
+            let email = tfEmail.text, !email.isEmpty,
+            let clave = tfClave.text, !clave.isEmpty
+        else {
             return
         }
-        
-        let nuevoUsuario = Usuario(id: nil, nombre: nombre, email: email, clave: clave, rol: "usuario")
-        
+
+        let nuevoUsuario = Usuario(
+            id: nil, nombre: nombre, email: email, clave: clave, rol: "usuario")
+
         let dao = UsuarioDAO()
         dao.guardar(usuario: nuevoUsuario) { exito in
             if exito {
@@ -31,7 +31,7 @@ class GeneraUsuarioAdminViewController: UIViewController {
             }
         }
     }
-    
+
     @IBAction func btnVolverTapped(_ sender: UIButton) {
         dismiss(animated: true)
     }

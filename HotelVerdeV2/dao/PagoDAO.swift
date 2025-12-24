@@ -13,7 +13,6 @@ class PagoDAO {
     let db = Firestore.firestore()
     let coleccion = "pagos"
     
-    // MARK: - Guardar Pago
     func guardar(pago: Pago, completion: @escaping (Bool) -> Void) {
         
         let datos: [String: Any] = [
@@ -34,7 +33,6 @@ class PagoDAO {
         }
     }
     
-    // MARK: - Listar Pagos (Tiempo Real)
     func escucharPagos(completion: @escaping ([Pago]) -> Void) -> ListenerRegistration {
         
         return db.collection(coleccion)

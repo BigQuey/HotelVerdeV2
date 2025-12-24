@@ -73,7 +73,6 @@ class HotelListaAdminViewController: UIViewController, UITableViewDelegate,
                     let descripcion = data["descripcion"] as? String ?? ""
                     let servicio = data["servicio"] as? String ?? ""
 
-                    // Asegúrate de pasar los parámetros en el orden correcto de tu Struct
                     let nuevoHotel = Hotel(
                         id: id,
                         codigo: codigo,
@@ -94,14 +93,11 @@ class HotelListaAdminViewController: UIViewController, UITableViewDelegate,
     func tableView(
         _ tableView: UITableView, didSelectRowAt indexPath: IndexPath
     ) {
-        //        tableView.deselectRow(at: indexPath, animated: true)
-        //        performSegue(withIdentifier: "verDetalleHotel", sender: self)
+
         let hotelAEnviar = listaHoteles[indexPath.row]
 
-        // 2. Iniciamos el viaje, pero en sender ponemos el HOTEL (la mochila)
         performSegue(withIdentifier: "verDetalleHotel", sender: hotelAEnviar)
 
-        // 3. Deseleccionamos visualmente (opcional, pero mejor hacerlo aquí al final o en viewWillAppear)
         tableView.deselectRow(at: indexPath, animated: true)
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

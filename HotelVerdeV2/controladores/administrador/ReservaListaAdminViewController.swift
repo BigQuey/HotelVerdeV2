@@ -41,7 +41,6 @@ class ReservaListaAdminViewController: UIViewController, UITableViewDelegate, UI
         }
     }
 
-    // MARK: - TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return listaReservas.count
     }
@@ -60,27 +59,20 @@ class ReservaListaAdminViewController: UIViewController, UITableViewDelegate, UI
         return cell
     }
 
-    // MARK: - NUEVO: Seleccionar celda para Editar
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // Obtenemos la reserva seleccionada
         let reservaSeleccionada = listaReservas[indexPath.row]
-        // Hacemos el viaje a la pantalla de Edición (Asegúrate que el segue se llame así en el Storyboard)
         performSegue(withIdentifier: "irEditarReserva", sender: reservaSeleccionada)
         
-        // Deseleccionar visualmente
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
-    // MARK: - Navegación
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "irEditarReserva" {
-            // Pasamos el objeto a la pantalla de CRUD (Edición)
             if let destino = segue.destination as? ReservaCrudAdminViewController,
                let reserva = sender as? Reserva {
                 destino.reservaRecibida = reserva
             }
         }
-        // No hace falta lógica extra para "irNuevaReserva" porque va vacío
     }
 
     @IBAction func btnAgregarTapped(_ sender: UIButton) {

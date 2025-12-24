@@ -43,7 +43,6 @@ class HotelCrudAdminViewController: UIViewController {
     @IBAction func modificarTapped(_ sender: UIButton) {
         guard let id = hotelRecibido?.id else { return }
 
-        // Recolectar nuevos datos
         let datosActualizados: [String: Any] = [
             "codigo": tfCodigo.text ?? "",
             "nombre": tfNombre.text ?? "",
@@ -66,7 +65,6 @@ class HotelCrudAdminViewController: UIViewController {
     @IBAction func eliminarTapped(_ sender: UIButton) {
         guard let id = hotelRecibido?.id else { return }
 
-        // Alerta de confirmación
         let alerta = UIAlertController(
             title: "Eliminar", message: "¿Estás seguro?", preferredStyle: .alert
         )

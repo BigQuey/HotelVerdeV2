@@ -8,7 +8,6 @@
 import UIKit
 
 class ReservaCrudAdminViewController: UIViewController {
-    // MARK: - Outlets (Asegúrate de crearlos en el Storyboard)
     @IBOutlet weak var tfNombre: UITextField!
     @IBOutlet weak var tfApellido: UITextField!
     @IBOutlet weak var tfDNI: UITextField!
@@ -16,10 +15,8 @@ class ReservaCrudAdminViewController: UIViewController {
     @IBOutlet weak var tfFechaInicio: UITextField!
     @IBOutlet weak var tfFechaFin: UITextField!
 
-    // Variable que recibe la reserva desde la Lista (¡Crucial!)
     var reservaRecibida: Reserva?
 
-    // Variables para fechas
     private var fechaInicioSel: Date?
     private var fechaFinSel: Date?
     private let datePickerInicio = UIDatePicker()
@@ -31,7 +28,6 @@ class ReservaCrudAdminViewController: UIViewController {
         cargarDatosEnPantalla()
     }
 
-    // 1. Rellenar el formulario con los datos que llegaron
     func cargarDatosEnPantalla() {
         if let reserva = reservaRecibida {
             tfNombre.text = reserva.nombreCliente
@@ -39,7 +35,6 @@ class ReservaCrudAdminViewController: UIViewController {
             tfDNI.text = reserva.dniCliente
             tfHotel.text = reserva.nombreHotel
 
-            // Fechas
             fechaInicioSel = reserva.fechaInicio
             fechaFinSel = reserva.fechaFin
 
@@ -50,7 +45,6 @@ class ReservaCrudAdminViewController: UIViewController {
         }
     }
 
-    // MARK: - Botón EDITAR
     @IBAction func btnEditarTapped(_ sender: UIButton) {
         guard let id = reservaRecibida?.id,
             let nombre = tfNombre.text, !nombre.isEmpty,
@@ -60,10 +54,9 @@ class ReservaCrudAdminViewController: UIViewController {
             let fInicio = fechaInicioSel,
             let fFin = fechaFinSel
         else {
-            return  // Faltan datos
+            return
         }
 
-        // Creamos el objeto con los datos NUEVOS de las cajas de texto
         let reservaActualizada = Reserva(
             id: id,
             idHotel: "",
@@ -71,7 +64,7 @@ class ReservaCrudAdminViewController: UIViewController {
             nombreCliente: nombre,
             apellidoCliente: apellido,
             dniCliente: dni,
-            
+
             fechaInicio: fInicio,
             fechaFin: fFin,
             fechaCreacion: reservaRecibida?.fechaCreacion ?? Date()
@@ -93,7 +86,6 @@ class ReservaCrudAdminViewController: UIViewController {
         }
     }
 
-    // MARK: - Botón ELIMINAR
     @IBAction func btnEliminarTapped(_ sender: UIButton) {
         guard let id = reservaRecibida?.id else { return }
 
@@ -121,7 +113,6 @@ class ReservaCrudAdminViewController: UIViewController {
         dismiss(animated: true)
     }
 
-    // MARK: - Configuración de Calendarios (DatePicker)
     func configurarFechas() {
         crearDatePicker(
             picker: datePickerInicio, textField: tfFechaInicio,
