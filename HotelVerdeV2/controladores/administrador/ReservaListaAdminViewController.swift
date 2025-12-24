@@ -7,12 +7,13 @@
 
 import UIKit
 import FirebaseFirestore
+
 class ReservaListaAdminViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tvReservas: UITableView!
 
     var listaReservas: [Reserva] = []
-    var listener: ListenerRegistration?  // Para poder apagar la escucha al salir
+    var listener: ListenerRegistration?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,13 +28,11 @@ class ReservaListaAdminViewController: UIViewController, UITableViewDelegate, UI
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        // Dejamos de escuchar cambios cuando salimos de la pantalla para ahorrar datos
         listener?.remove()
     }
 
     func cargarDatos() {
         let dao = ReservaDAO()
-        // Guardamos la referencia del listener
         listener = dao.escucharReservas { [weak self] reservas in
             self?.listaReservas = reservas
             DispatchQueue.main.async {
@@ -43,38 +42,51 @@ class ReservaListaAdminViewController: UIViewController, UITableViewDelegate, UI
     }
 
     // MARK: - TableView
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int)
-        -> Int
-    {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return listaReservas.count
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
-        -> UITableViewCell
-    {
-        // Asegúrate de poner el ID "celdaReserva" en el Storyboard
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: "celdaReserva", for: indexPath)
-
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "celdaReserva", for: indexPath)
         let item = listaReservas[indexPath.row]
-
-        // Formatear fecha para que se vea bonita
+        
         let formateador = DateFormatter()
         formateador.dateStyle = .short
         let fechaTexto = formateador.string(from: item.fechaInicio)
 
         cell.textLabel?.text = "\(item.nombreCliente) \(item.apellidoCliente)"
-        cell.detailTextLabel?.text =
-            "Hotel: \(item.nombreHotel) - Entrada: \(fechaTexto)"
+        cell.detailTextLabel?.text = "Hotel: \(item.nombreHotel) - Entrada: \(fechaTexto)"
 
         return cell
     }
 
+    // MARK: - NUEVO: Seleccionar celda para Editar
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // Obtenemos la reserva seleccionada
+        let reservaSeleccionada = listaReservas[indexPath.row]
+        // Hacemos el viaje a la pantalla de Edición (Asegúrate que el segue se llame así en el Storyboard)
+        performSegue(withIdentifier: "irEditarReserva", sender: reservaSeleccionada)
+        
+        // Deseleccionar visualmente
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+
     // MARK: - Navegación
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "irEditarReserva" {
+            // Pasamos el objeto a la pantalla de CRUD (Edición)
+            if let destino = segue.destination as? ReservaCrudAdminViewController,
+               let reserva = sender as? Reserva {
+                destino.reservaRecibida = reserva
+            }
+        }
+        // No hace falta lógica extra para "irNuevaReserva" porque va vacío
+    }
+
     @IBAction func btnAgregarTapped(_ sender: UIButton) {
-        // Conecta este Segue en el Storyboard hacia la vista de Nueva Reserva
         performSegue(withIdentifier: "irNuevaReserva", sender: self)
     }
+    
     @IBAction func btnVolverTapped(_ sender: UIButton) {
         dismiss(animated: true)
     }
