@@ -5,71 +5,79 @@
 //  Created by DAMII on 20/12/25.
 //
 
-import UIKit
-import CoreData
+import Foundation
+import FirebaseFirestore
 
-class HabitacionDAO: IMetodos {
+class HabitacionDAO {
     
-    typealias Bean = Habitacion
-    typealias Entity = HabitacionEntity
-
-    func save(bean: Habitacion) -> Int {
-        var salida = -1
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        let tabla = HabitacionEntity(context: bd)
+    let db = Firestore.firestore()
+    
+    // MARK: - Guardar Habitación
+    func guardar(habitacion: Habitacion, completion: @escaping (Bool) -> Void) {
         
-        tabla.codigo = bean.codigo
-        tabla.numero = bean.numero
-        tabla.precio = bean.precio
-        tabla.tipo = bean.tipo
+        let datos: [String: Any] = [
+            "idHotel": habitacion.idHotel, // IMPORTANTE
+            "codigo": habitacion.codigo,
+            "numero": habitacion.numero,
+            "precio": habitacion.precio,
+            "tipo": habitacion.tipo,
+            "descripcion": habitacion.descripcion,
+            "fecha_creacion": FieldValue.serverTimestamp()
+        ]
         
-        do {
-            try bd.save()
-            salida = 1
-        } catch let x as NSError {
-            print(x.localizedDescription)
+        db.collection("habitaciones").addDocument(data: datos) { error in
+            if let error = error {
+                print("Error guardando habitación: \(error)")
+                completion(false)
+            } else {
+                completion(true)
+            }
         }
-        return salida
     }
-
-    func update(bean: HabitacionEntity) -> Int {
-        var salida = -1
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        do {
-            try bd.save()
-            salida = 1
-        } catch let x as NSError {
-            print(x.localizedDescription)
-        }
-        return salida
+    
+    // MARK: - Listar Habitaciones de un Hotel (Filtro)
+    func listarPorHotel(idHotel: String, completion: @escaping ([Habitacion]) -> Void) {
+        
+        // Usamos whereField para traer SOLO las de este hotel
+        db.collection("habitaciones")
+            .whereField("idHotel", isEqualTo: idHotel)
+            .getDocuments { snapshot, error in
+                
+                if let error = error {
+                    print("Error listando: \(error)")
+                    completion([])
+                    return
+                }
+                
+                var lista: [Habitacion] = []
+                
+                guard let docs = snapshot?.documents else {
+                    completion([])
+                    return
+                }
+                
+                for doc in docs {
+                    let data = doc.data()
+                    let hab = Habitacion(
+                        id: doc.documentID,
+                        idHotel: data["idHotel"] as? String ?? "",
+                        codigo: data["codigo"] as? String ?? "",
+                        numero: data["numero"] as? String ?? "",
+                        precio: data["precio"] as? Double ?? 0.0,
+                        tipo: data["tipo"] as? String ?? "",
+                        descripcion: data["descripcion"] as? String ?? ""
+                    )
+                    lista.append(hab)
+                }
+                
+                completion(lista)
+            }
     }
-
-    func delete(bean: HabitacionEntity) -> Int {
-        var salida = -1
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        do {
-            bd.delete(bean)
-            try bd.save()
-            salida = 1
-        } catch let x as NSError {
-            print(x.localizedDescription)
+    
+    // MARK: - Eliminar
+    func eliminar(idHabitacion: String, completion: @escaping (Bool) -> Void) {
+        db.collection("habitaciones").document(idHabitacion).delete { error in
+            completion(error == nil)
         }
-        return salida
-    }
-
-    func findAll() -> [HabitacionEntity] {
-        var lista: [HabitacionEntity] = []
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        do {
-            let datos = HabitacionEntity.fetchRequest()
-            lista = try bd.fetch(datos) as! [HabitacionEntity]
-        } catch let x as NSError {
-            print(x.localizedDescription)
-        }
-        return lista
     }
 }

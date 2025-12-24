@@ -8,8 +8,11 @@
 import UIKit
 
 struct Habitacion {
-    var codigo: Int32
-    var numero: Int16
-    var precio: Double
-    var tipo: String
+        var id: String?      // ID de Firebase
+        var idHotel: String  // <--- CLAVE: Para saber a qué hotel pertenece
+        var codigo: String
+        var numero: String
+        var precio: Double
+        var tipo: String
+        var descripcion: String
 }

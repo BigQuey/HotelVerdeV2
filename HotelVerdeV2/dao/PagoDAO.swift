@@ -5,73 +5,65 @@
 //  Created by DAMII on 20/12/25.
 //
 
-import UIKit
+import Foundation
+import FirebaseFirestore
 
-import UIKit
-import CoreData
-
-class PagoDAO: IMetodos {
+class PagoDAO {
     
-    typealias Bean = Pago
-    typealias Entity = PagoEntity
-
-    func save(bean: Pago) -> Int {
-        var salida = -1
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        let tabla = PagoEntity(context: bd)
+    let db = Firestore.firestore()
+    let coleccion = "pagos"
+    
+    // MARK: - Guardar Pago
+    func guardar(pago: Pago, completion: @escaping (Bool) -> Void) {
         
-        tabla.codigo = bean.codigo
-        tabla.fecha = bean.fecha
-        tabla.metodo = bean.metodo
-        tabla.monto = bean.monto
+        let datos: [String: Any] = [
+            "nombreCliente": pago.nombreCliente,
+            "monto": pago.monto,
+            "fecha": pago.fecha,
+            "metodo": pago.metodo,
+            "fechaCreacion": FieldValue.serverTimestamp()
+        ]
         
-        do {
-            try bd.save()
-            salida = 1
-        } catch let x as NSError {
-            print(x.localizedDescription)
+        db.collection(coleccion).addDocument(data: datos) { error in
+            if let error = error {
+                print("Error guardando pago: \(error)")
+                completion(false)
+            } else {
+                completion(true)
+            }
         }
-        return salida
     }
-
-    func update(bean: PagoEntity) -> Int {
-        var salida = -1
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        do {
-            try bd.save()
-            salida = 1
-        } catch let x as NSError {
-            print(x.localizedDescription)
-        }
-        return salida
-    }
-
-    func delete(bean: PagoEntity) -> Int {
-        var salida = -1
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        do {
-            bd.delete(bean)
-            try bd.save()
-            salida = 1
-        } catch let x as NSError {
-            print(x.localizedDescription)
-        }
-        return salida
-    }
-
-    func findAll() -> [PagoEntity] {
-        var lista: [PagoEntity] = []
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        let bd = delegate.persistentContainer.viewContext
-        do {
-            let datos = PagoEntity.fetchRequest()
-            lista = try bd.fetch(datos) as! [PagoEntity]
-        } catch let x as NSError {
-            print(x.localizedDescription)
-        }
-        return lista
+    
+    // MARK: - Listar Pagos (Tiempo Real)
+    func escucharPagos(completion: @escaping ([Pago]) -> Void) -> ListenerRegistration {
+        
+        return db.collection(coleccion)
+            .order(by: "fechaCreacion", descending: true)
+            .addSnapshotListener { snapshot, error in
+                
+                guard let documents = snapshot?.documents else {
+                    completion([])
+                    return
+                }
+                
+                var lista: [Pago] = []
+                
+                for doc in documents {
+                    let data = doc.data()
+                    let timestamp = data["fecha"] as? Timestamp
+                    
+                    let nuevoPago = Pago(
+                        id: doc.documentID,
+                        nombreCliente: data["nombreCliente"] as? String ?? "Desconocido",
+                        monto: data["monto"] as? Double ?? 0.0,
+                        fecha: timestamp?.dateValue() ?? Date(),
+                        metodo: data["metodo"] as? String ?? "Efectivo"
+                    )
+                    
+                    lista.append(nuevoPago)
+                }
+                
+                completion(lista)
+            }
     }
 }
